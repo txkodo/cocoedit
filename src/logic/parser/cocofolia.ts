@@ -2,20 +2,12 @@ import type { LogDoc, Log, Profile, Room } from "../model";
 import type { LogDocParser } from "./base";
 import { NodeHtmlParser, type HtmlParser } from "../service/htmlParser";
 
-/**
- * CocofoliaLogDocParser implements the LogDocParser interface
- * to parse Cocofolia HTML logs into LogDoc objects
- */
 export class CocofoliaLogDocParser implements LogDocParser {
     #htmlParser: HtmlParser;
     constructor(htmlParser: HtmlParser) {
         this.#htmlParser = htmlParser;
     }
-    /**
-     * Parse Cocofolia HTML log into a LogDoc object
-     * @param html The HTML string from Cocofolia log
-     * @returns A promise resolving to the parsed LogDoc object
-     */
+
     async parse(html: string): Promise<LogDoc> {
         const doc = await this.#htmlParser.parse(html);
 
@@ -148,7 +140,7 @@ if (import.meta.vitest) {
             }
         ]
 
-        it.each(testCases)('should parse Cocofolia log correctly', async ({ before, after }) => {
+        it.each(testCases)('$explain', async ({ before, after }) => {
             const result = await new CocofoliaLogDocParser(new NodeHtmlParser()).parse(before);
             expect(result).toEqual(after);
         })

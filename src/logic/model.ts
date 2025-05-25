@@ -11,7 +11,6 @@ export const LogSchema = v.object({
     profile_id: v.string(),
     room_id: v.string(),
     message: v.string(),
-    timestamp: v.optional(v.date()),
     color_override: v.optional(v.string()),
 });
 export type Log = v.InferOutput<typeof LogSchema>;
