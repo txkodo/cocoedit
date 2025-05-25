@@ -1,93 +1,89 @@
-import type { LogDoc, Log, Profile, Tab } from "../model";
-import { JSDOM } from "jsdom";
+import type { LogDoc, Log, Profile, Room } from "../model";
+import type { LogDocParser } from "./base";
+import { NodeHtmlParser, type HtmlParser } from "../service/htmlParser";
 
-export function parseCocofolia(html: string): LogDoc {
-    // HTML文字列をDOMとしてパース
-    let doc: Document;
-
-    // ブラウザ環境とNode環境で分岐
-    if (typeof window !== 'undefined' && window.DOMParser) {
-        // ブラウザ環境
-        const parser = new window.DOMParser();
-        doc = parser.parseFromString(html, 'text/html');
-    } else {
-        // Node環境（テスト用）
-        const dom = new JSDOM(html);
-        doc = dom.window.document;
+/**
+ * CocofoliaLogDocParser implements the LogDocParser interface
+ * to parse Cocofolia HTML logs into LogDoc objects
+ */
+export class CocofoliaLogDocParser implements LogDocParser {
+    #htmlParser: HtmlParser;
+    constructor(htmlParser: HtmlParser) {
+        this.#htmlParser = htmlParser;
     }
+    /**
+     * Parse Cocofolia HTML log into a LogDoc object
+     * @param html The HTML string from Cocofolia log
+     * @returns A promise resolving to the parsed LogDoc object
+     */
+    async parse(html: string): Promise<LogDoc> {
+        const doc = await this.#htmlParser.parse(html);
 
-    // 結果として返す LogDoc オブジェクトの初期化
-    const result: LogDoc = {
-        name: 'Cocofolia Log',
-        logs: [],
-        profiles: [],
-        tabs: []
-    };
+        const logs: Log[] = []
+        const profileMap = new Map<string, Profile>();
+        const roomMap = new Map<string, Room>();
 
-    // デフォルトのタブを追加
-    const defaultTab: Tab = {
-        id: 'default',
-        name: 'メインログ'
-    };
-    result.tabs.push(defaultTab);
+        // ログエントリを探す (p タグ)
+        const logEntries = doc.querySelectorAll('body > p');
+        // 各ログエントリを処理
+        logEntries.forEach((entry) => {
+            // すべてのspanを取得
+            const spans = Array.from(entry.querySelectorAll('span'));
+            const [roomName, profileName, message] = spans.map(x => x.textContent?.trim() || '');
 
-    // ログエントリを探す (p タグ)
-    const logEntries = doc.querySelectorAll('body > p');
+            // プロフィール ID の生成または取得
+            const profileId = (() => {
+                const profile = profileMap.get(profileName);
+                if (profile) {
+                    return profile.id;
+                } else {
+                    const newId = `profile_${profileMap.size + 1}`;
 
-    // プロフィール ID を追跡するためのマップ
-    const profileMap = new Map<string, string>();
+                    // 色を取得（p タグのスタイルから）
+                    const colorStyle = entry.getAttribute('style') || '';
+                    const colorMatch = colorStyle.match(/color:\s*([^;]+)/);
+                    const color = colorMatch ? colorMatch[1] : '#000000';
 
-    // 各ログエントリを処理
-    logEntries.forEach((entry, index) => {
-        // すべてのspanを取得
-        const spans = Array.from(entry.querySelectorAll('span'));
+                    profileMap.set(profileName, {
+                        id: newId,
+                        name: profileName,
+                        color: color
+                    });
+                    return newId;
+                }
+            })();
 
-        // キャラクター名は2番目のspanに含まれることが多い
-        let profileName = 'Unknown';
-        if (spans.length >= 2) {
-            profileName = spans[1].textContent?.trim() || 'Unknown';
+            // ルーム ID の生成または取得
+            const roomId = (() => {
+                const trimmedRoomName = roomName.replace(/^\s*(?:\[\s*)?/, '').replace(/(?:\s*])?\s*$/, '');
+                const room = roomMap.get(trimmedRoomName);
+                if (room) {
+                    return room.id;
+                } else {
+                    const newId = `room_${roomMap.size + 1}`;
+                    roomMap.set(trimmedRoomName, {
+                        id: newId,
+                        name: trimmedRoomName
+                    });
+                    return newId;
+                }
+            })();
+
+            // 結果にログを追加
+            logs.push({
+                profile_id: profileId,
+                room_id: roomId,
+                message: message
+            });
+        });
+
+        return {
+            name: 'Cocofolia Log',
+            logs: logs,
+            profiles: Array.from(profileMap.values()),
+            room: Array.from(roomMap.values())
         }
-
-        // 色を取得（p タグのスタイルから）
-        const colorStyle = entry.getAttribute('style') || '';
-        const colorMatch = colorStyle.match(/color:\s*([^;]+)/);
-        const color = colorMatch ? colorMatch[1] : '#888888';
-
-        // プロフィール ID の生成または取得
-        let profileId = '';
-        if (profileMap.has(profileName)) {
-            profileId = profileMap.get(profileName)!;
-        } else {
-            profileId = `profile_${result.profiles.length + 1}`;
-            profileMap.set(profileName, profileId);
-
-            // 新しいプロフィールを追加
-            const profile: Profile = {
-                id: profileId,
-                name: profileName,
-                color: color
-            };
-            result.profiles.push(profile);
-        }
-
-        // メッセージを取得（最後の span の内容）
-        const messageSpans = Array.from(entry.querySelectorAll('span'));
-        let message = '';
-        if (messageSpans.length >= 3) {
-            message = messageSpans[messageSpans.length - 1].innerHTML;
-        }
-
-        // ログを作成
-        const log: Log = {
-            profile_id: profileId,
-            message: message
-        };
-
-        // 結果にログを追加
-        result.logs.push(log);
-    });
-
-    return result;
+    }
 }
 
 // In-source testing with Vitest
@@ -131,6 +127,7 @@ if (import.meta.vitest) {
                     logs: [
                         {
                             profile_id: 'profile_1',
+                            room_id: 'room_1',
                             message: 'コメント'
                         }
                     ],
@@ -141,18 +138,18 @@ if (import.meta.vitest) {
                             color: '#888888'
                         }
                     ],
-                    tabs: [
+                    room: [
                         {
-                            id: '部屋A',
-                            name: 'メインログ'
+                            id: 'room_1',
+                            name: '部屋A'
                         }
                     ]
                 }
             }
         ]
 
-        it.each(testCases)('should parse Cocofolia log correctly', ({ before, after }) => {
-            const result = parseCocofolia(before);
+        it.each(testCases)('should parse Cocofolia log correctly', async ({ before, after }) => {
+            const result = await new CocofoliaLogDocParser(new NodeHtmlParser()).parse(before);
             expect(result).toEqual(after);
         })
     });
