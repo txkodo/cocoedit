@@ -1,4 +1,4 @@
-import type { LogDoc } from "../model";
+import type { LogDoc } from "../../model";
 
 
 export interface LogDocParser {

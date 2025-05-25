@@ -1,6 +1,6 @@
-import type { LogDoc, Log, Profile, Room } from "../model";
+import type { LogDoc, Log, Profile, Room } from "../../model";
 import type { LogDocParser } from "./base";
-import { NodeHtmlParser, type HtmlParser } from "../service/htmlParser";
+import { NodeHtmlParser, type HtmlParser } from "../htmlParser";
 
 export class TekeyDocParser implements LogDocParser {
     #htmlParser: HtmlParser;
