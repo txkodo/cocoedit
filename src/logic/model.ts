@@ -4,6 +4,7 @@ export const ProfileSchema = v.object({
     id: v.string(),
     name: v.string(),
     color: v.string(),
+    hidden: v.optional(v.boolean()),
 });
 export type Profile = v.InferOutput<typeof ProfileSchema>;
 
@@ -12,6 +13,7 @@ export const LogSchema = v.object({
     room_id: v.string(),
     message: v.string(),
     color_override: v.optional(v.string()),
+    hidden: v.optional(v.boolean()),
 });
 export type Log = v.InferOutput<typeof LogSchema>;
 

@@ -8,4 +8,11 @@ export default defineConfig({
     includeSource: ['src/**/*.{js,ts}'],
     globals: true,
   },
+  // Add this section to exclude private directory
+  server: {
+    fs: {
+      allow: ['..'],
+      deny: ['**/private/**']
+    }
+  }
 });
