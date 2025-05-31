@@ -1,7 +1,17 @@
 <script lang="ts">
   import "./app.css";
-  import { DarkMode, Navbar, NavBrand } from "flowbite-svelte";
+  import {
+    DarkMode,
+    Dropdown,
+    DropdownItem,
+    Navbar,
+    NavBrand,
+  } from "flowbite-svelte";
   import ListEditor from "./lib/ListEditor.svelte";
+  import jsonData from "./lib/logs.json";
+  import { LogDocEdit } from "./lib/logEditor.svelte";
+
+  const logdoc = new LogDocEdit(jsonData);
 </script>
 
 <main class="h-screen flex flex-col">
@@ -16,19 +26,10 @@
       <DarkMode />
     </Navbar>
   </div>
-
   <div class="flex flex-1 overflow-hidden">
-    <!-- <div
-      id="sidebar1"
-      aria-controls="sidebar1"
-      aria-labelledby="sidebar1"
-      class="overflow-y-auto z-50 p-4 inset-y-0 start-0 w-80"
-      tabindex="-1"
-    >
-    </div> -->
-
     <div class="h-full w-full">
-      <ListEditor />
+      <ListEditor {logdoc} />
+      <!-- <Dnd /> -->
     </div>
   </div>
 </main>

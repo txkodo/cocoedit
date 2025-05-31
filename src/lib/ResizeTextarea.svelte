@@ -16,24 +16,7 @@
     bind:this={textarea}
     bind:value
     {...restProps}
-    class="
-    resize-none
-    rounded-lg
-    border-none
-    bg-transparent
-    py-0.5
-    dark:placeholder-gray-400
-
-    text-gray-900
-    dark:text-white
-
-    w-full
-    text-sm
-    overflow-hidden
-
-    focus:bg-gray-100
-    dark:focus:bg-gray-700
-    "
+    class={` w-full resize-none overflow-hidden` + restProps.class}
     oninput={resize}
     rows="1"
 ></textarea>
