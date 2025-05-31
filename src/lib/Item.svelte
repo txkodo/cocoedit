@@ -4,6 +4,8 @@
     import { PlusOutline, CloseOutline } from "flowbite-svelte-icons";
     import { Card } from "flowbite-svelte";
     import Popover from "./Popover.svelte";
+    import IdentText from "./atoms/IdentText.svelte";
+    import LeftBar from "./atoms/LeftBar.svelte";
     let {
         log = $bindable(),
         height = $bindable(0),
@@ -17,29 +19,41 @@
         ondelete: () => void;
         oninsert: () => void;
     } = $props();
+
+    let profile = $derived(
+        (() => {
+            log;
+            return profiles.find((x) => x.id === log.profile_id);
+        })(),
+    );
 </script>
 
 <div class="item w-full flex px-2 md:px-8" bind:clientHeight={height}>
-    <div
-        class="w-1 mr-2 my-1 bottom-10 top-10 rounded-sm"
+    <LeftBar
         style="background-color: {profiles.find((x) => x.id === log.profile_id)
             ?.color};"
-    ></div>
+    />
     <div class="flex-grow mr-2">
         <div class="flex">
             <Popover>
                 {#snippet target(onclick)}
-                    <button {onclick}>
-                        <span
-                            class="text-sm font-bold"
-                            style="color: {profiles.find(
-                                (x) => x.id === log.profile_id,
-                            )?.color};"
+                    {#if profile}
+                        <button
+                            {onclick}
+                            class={profile.display === "message"
+                                ? "hideName"
+                                : ""}
                         >
-                            {profiles.find((x) => x.id === log.profile_id)
-                                ?.name} :
-                        </span>
-                    </button>
+                            <IdentText
+                                style="color: {profiles.find(
+                                    (x) => x.id === log.profile_id,
+                                )?.color};"
+                            >
+                                {profiles.find((x) => x.id === log.profile_id)
+                                    ?.name} :
+                            </IdentText>
+                        </button>
+                    {/if}
                 {/snippet}
                 {#snippet popover(onclick)}
                     <Card class="p-2">
@@ -110,6 +124,14 @@
     }
 
     .item:hover .control {
+        display: block;
+    }
+
+    .hideName {
+        display: none;
+    }
+
+    .item:hover .hideName {
         display: block;
     }
 </style>

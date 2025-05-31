@@ -1,10 +1,13 @@
 import * as v from 'valibot';
 
+export const ProfileDisplaySchema = v.union([v.literal('full'), v.literal('message'), v.literal('hidden')]);
+export type ProfileDisplay = v.InferOutput<typeof ProfileDisplaySchema>;
+
 export const ProfileSchema = v.object({
     id: v.string(),
     name: v.string(),
     color: v.string(),
-    hidden: v.optional(v.boolean()),
+    display: ProfileDisplaySchema,
 });
 export type Profile = v.InferOutput<typeof ProfileSchema>;
 
