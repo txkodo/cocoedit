@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>Loading...</title>
+    <script>
+      // GitHub Pages用のSPAフォールバック
+      // 404ページから元のURLを復元してリダイレクト
+      const path = window.location.pathname.replace('/cocoedit', '');
+      const query = window.location.search;
+      const hash = window.location.hash;
+      
+      // ベースURLを含めたリダイレクト先を構築
+      const redirect = '/cocoedit/' + '?p=' + encodeURIComponent(path) + query.replace('?', '&') + hash;
+      
+      window.location.replace(redirect);
+    </script>
+  </head>
+  <body>
+    <p>Loading...</p>
+  </body>
+</html>
