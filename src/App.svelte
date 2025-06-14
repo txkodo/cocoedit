@@ -2,7 +2,7 @@
   import "./app.css";
   import { Button, DarkMode, Navbar, NavBrand } from "flowbite-svelte";
   import ListEditor from "./lib/ListEditor.svelte";
-  import jsonData from "./lib/logs.json";
+  import jsonData from "./lib/samplelogs.json";
   import { LogDocEdit } from "./lib/logEditor.svelte";
   import Sidebar from "./lib/parts/Sidebar.svelte";
 

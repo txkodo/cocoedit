@@ -25,3 +25,5 @@ dist-ssr
 
 
 private/
+
+src/lib/samplelogs.json
