@@ -8,8 +8,8 @@
     "build": "bun run vite build",
     "preview": "bun run vite preview",
     "deploy": "bun run build && bunx gh-pages -d dist",
-    "test": "vitest",
-    "test:once": "vitest run",
+    "test:watch": "vitest",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
