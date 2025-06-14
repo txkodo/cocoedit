@@ -2,6 +2,7 @@ import type { Log, LogDoc, Profile } from "src/logic/model";
 
 export class LogDocEdit {
     profiles: Profile[];
+    #allLogOrder: number[];
     logOrder: number[];
     #logMap: Map<number, Log>;
     constructor(
@@ -16,8 +17,19 @@ export class LogDocEdit {
             this.#logMap.set(id, log);
             logIds.push(id);
         }
-        this.logOrder = $state(logIds);
+        this.#allLogOrder = $state(logIds);
         this.#updateSignal = $state(false);
+
+        this.logOrder = $derived((() => {
+            return this.#allLogOrder.filter(x => {
+                this.profiles; // Ensure profiles are reactive
+                const profid = this.#logMap.get(x)?.profile_id
+                if (profid === undefined) return false;
+                const prof = this.profiles.find(p => p.id === profid);
+                if (prof === undefined) return false;
+                return prof.display !== "hidden";
+            })
+        })())
     }
 
     #_nextId = 0
@@ -34,7 +46,7 @@ export class LogDocEdit {
     }
 
     deleteLog(id: number) {
-        this.logOrder = this.logOrder.filter(x => x !== id);
+        this.#allLogOrder = this.#allLogOrder.filter(x => x !== id);
         this.#logMap.delete(id);
     }
 
@@ -60,14 +72,14 @@ export class LogDocEdit {
             profile_id: thisLog.profile_id,
             room_id: thisLog.room_id
         });
-        const index = this.logOrder.indexOf(id);
+        const index = this.#allLogOrder.indexOf(id);
         if (index === -1) {
-            this.logOrder = [...this.logOrder, newId];
+            this.#allLogOrder = [...this.#allLogOrder, newId];
         } else {
-            this.logOrder = [
-                ...this.logOrder.slice(0, index + 1),
+            this.#allLogOrder = [
+                ...this.#allLogOrder.slice(0, index + 1),
                 newId,
-                ...this.logOrder.slice(index + 1),
+                ...this.#allLogOrder.slice(index + 1),
             ];
         }
         return newId;

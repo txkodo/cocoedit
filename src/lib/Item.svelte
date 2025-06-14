@@ -28,7 +28,10 @@
     );
 </script>
 
-<div class="item w-full flex px-2 md:px-8" bind:clientHeight={height}>
+<div
+    class="item hover:bg-gray-50 dark:hover:bg-gray-800 w-full flex px-2 md:px-8"
+    bind:clientHeight={height}
+>
     <LeftBar
         style="background-color: {profiles.find((x) => x.id === log.profile_id)
             ?.color};"
@@ -105,13 +108,16 @@
                 mr-2
                 py-0.5
                 rounded-lg
-                border-none
+                message
 
                 bg-transparent
                 
                 hover:bg-gray-50  dark:hover:bg-gray-800
                 text-gray-900     dark:text-white
                 focus:bg-gray-100 dark:focus:bg-gray-700
+
+                focus:border-transparent
+                
                 text-sm"
             name="log-message"
         />
@@ -133,5 +139,15 @@
 
     .item:hover .hideName {
         display: block;
+    }
+
+    :global(.message) {
+        border-style: solid;
+        border-color: transparent;
+    }
+    .item:hover :global(.message) {
+        border-style: solid;
+        border-color: rgba(170, 170, 170, 0.5);
+        border-width: 0.5px;
     }
 </style>

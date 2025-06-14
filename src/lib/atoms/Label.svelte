@@ -5,7 +5,7 @@
 </script>
 
 <div
-    class="flex p-2 rounded-sm dark:hover:bg-white dark:hover:bg-opacity-10 hover:bg-black hover:bg-opacity-5"
+    class="flex px-2 py-4 rounded-sm dark:hover:bg-white dark:hover:bg-opacity-10 hover:bg-black hover:bg-opacity-5"
 >
     {#if children}{@render children()}{/if}
     {#if right}
