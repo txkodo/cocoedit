@@ -1,14 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja" %sveltekit.theme%>
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/cocoedit/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Svelte</title>
-    <script type="module" crossorigin src="/cocoedit/assets/index-BXtMHK0D.js"></script>
-    <link rel="stylesheet" crossorigin href="/cocoedit/assets/index-yJpzg09Q.css">
+    <meta charset="utf-8" />
+    <link rel="icon" href="/cocoedit/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/entry/start.CC1NgbjB.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/DZmPoiO7.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/Ca4-jLIh.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/CWtnuI6P.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/entry/app.fYcCi9Vd.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/_LL4Cxgh.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/9NcU9RcG.js">
+		<link rel="modulepreload" href="/cocoedit/_app/immutable/chunks/CfXbILD-.js">
   </head>
-  <body>
-    <div id="app"></div>
+  <body data-sveltekit-preload-data="hover" class="%sveltekit.theme%">
+    <div style="display: contents">
+			<script>
+				{
+					__sveltekit_1vdimqk = {
+						base: "/cocoedit",
+						assets: "/cocoedit"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/cocoedit/_app/immutable/entry/start.CC1NgbjB.js"),
+						import("/cocoedit/_app/immutable/entry/app.fYcCi9Vd.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
   </body>
 </html>
